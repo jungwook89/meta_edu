@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Built-By: meta
+Class-Path: dependency-jars/spring-context-3.2.3.RELEASE.jar dependenc
+ y-jars/spring-aop-3.2.3.RELEASE.jar dependency-jars/aopalliance-1.0.j
+ ar dependency-jars/spring-beans-3.2.3.RELEASE.jar dependency-jars/spr
+ ing-core-3.2.3.RELEASE.jar dependency-jars/commons-logging-1.1.1.jar 
+ dependency-jars/spring-expression-3.2.3.RELEASE.jar
+Build-Jdk: 1.8.0_121
+Created-By: Maven Integration for Eclipse
+Main-Class: main.IoMain
+
