@@ -1,3 +1,0 @@
-@echo off
-java -cp C:\dev\sts-bundle\sts-3.9.3.RELEASE\workspace\meta_edu_2week\target\classes\aopalliance-1.0.jar;C:\dev\sts-bundle\sts-3.9.3.RELEASE\workspace\meta_edu_2week\target\classes\commons-logging-1.1.1.jar;C:\dev\sts-bundle\sts-3.9.3.RELEASE\workspace\meta_edu_2week\target\classes\spring-aop-3.2.3.RELEASE.jar;C:\dev\sts-bundle\sts-3.9.3.RELEASE\workspace\meta_edu_2week\target\classes\spring-beans-3.2.3.RELEASE.jar;C:\dev\sts-bundle\sts-3.9.3.RELEASE\workspace\meta_edu_2week\target\classes\spring-context-3.2.3.RELEASE.jar;C:\dev\sts-bundle\sts-3.9.3.RELEASE\workspace\meta_edu_2week\target\classes\spring-core-3.2.3.RELEASE.jar;C:\dev\sts-bundle\sts-3.9.3.RELEASE\workspace\meta_edu_2week\target\classes\spring-expression-3.2.3.RELEASE.jar -jar 2week.jar
-pause>nul
