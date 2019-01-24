@@ -12,8 +12,7 @@ public class SelectionSort {
 			int tmpData = 0;
 			int minData = 100;
 			for (int i = targetIdx;i<requestArr.length;i++){
-				
-				if(minData<requestArr[i]){
+				if(minData>requestArr[i]){
 					minData = requestArr[i];
 					minDataIdx=i;
 				}
@@ -24,8 +23,6 @@ public class SelectionSort {
 		}
 		return requestArr;
 	}
-	
-	
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -36,7 +33,7 @@ public class SelectionSort {
 		}
 		System.out.println(Arrays.toString(testArr));
 		SelectionSort testSort = new SelectionSort();
-		Arrays.toString(testSort.sort(testArr));
+		System.out.println(Arrays.toString(testSort.sort(testArr)));
 	}
 
 }
