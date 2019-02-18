@@ -32,9 +32,6 @@ import org.xml.sax.SAXException;
 
 public class XmlFileAnalysis3 {
 	private File rootFile;//package 위치
-	private File rootFilePath;
-	private String rootPath;
-	private ArrayList<File> rootList;
 	public XmlFileAnalysis3(String rootFilePath){
 		this.rootFile = new File(rootFilePath);
 	}
@@ -45,14 +42,11 @@ public class XmlFileAnalysis3 {
 		return document;
 	}
 	public Map<String, Object> fileFinder() {
-		//		Map findList= new ArrayList<File>();
 		Map<String, Object> findMap = new HashMap<String,Object>();
 		ArrayList<File> rootList= new ArrayList<File>(Arrays.asList(rootFile.listFiles()));
 		String curName;
 		for(File file:rootList) {
-			//			System.out.println(one.getName());
 			curName = file.getName();
-			//			System.out.println(curName);
 			String reg1 = "(^[FP]_[0-9]*_TB.xml$)";
 			Pattern p = Pattern.compile(reg1);
 			Matcher m = p.matcher(curName);
@@ -62,13 +56,11 @@ public class XmlFileAnalysis3 {
 		}
 		return findMap;
 	}
-
 	public ArrayList<File> fileFinder(String path,String file_id) {
 		File customFile = new File(path);
 		ArrayList<File> customList= new ArrayList<File>(Arrays.asList(customFile.listFiles()));
 		return customList;
 	}
-
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
 		XmlFileAnalysis3 xml = new XmlFileAnalysis3("C:\\dev\\github\\metabuild\\xmlFileAnalysis\\src\\xml\\xmlFiles");
@@ -81,44 +73,30 @@ public class XmlFileAnalysis3 {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			Map<String, Object> findMap = xml.fileFinder();
-
 			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			//		System.out.println((System.currentTimeMillis()-start)/1000);
 			for(int i = 0; i < nodeList.getLength(); i++){
-				//        	System.out.println("i:"+i);
 				String curNodeId=nodeList.item(i).getTextContent();
-				//        	System.out.println(curNodeId);
-				//        	System.out.println((System.currentTimeMillis()-start)/1000.0);
 				if(findMap.containsKey("F_"+curNodeId+"_TB.xml")) {
 					File fFile = (File)findMap.get("F_"+curNodeId+"_TB.xml");
 					File pFile = (File)findMap.get("P_"+curNodeId+"_TB.xml");
-					//        	System.out.println("F_"+curNodeId+"_TB.xml");
 					String fFilePath = fFile.getPath();
 					String pFilePath = pFile.getPath();
 					Document dmF = xml.xmlFileReader(fFilePath);
 					Document dmP = xml.xmlFileReader(pFilePath);
-
+					//두개파일을 리드
 					XPathExpression fExpr = xpath.compile("//ROW[(SIMILAR_RATE div 100) > 15]");
 					NodeList fNodeList = (NodeList) fExpr.evaluate(dmF, XPathConstants.NODESET);
-					//    		System.out.println((System.currentTimeMillis()-start)/1000.0);
-
-					System.out.println(curNodeId+"에프값"+fNodeList.getLength());
+//					System.out.println(curNodeId+"에프값"+fNodeList.getLength());
 					for(int j = 0; j < fNodeList.getLength(); j++){
-						
-						//    			System.out.println("j:"+j);
-						//    			String pId = fNodeList.item(j).getTextContent();
-						//    			System.out.println(fNodeList.item(j).getTextContent());
 						Element fElement = (Element)fNodeList.item(j).getChildNodes();
 						String pId = fElement.getElementsByTagName("P_ID").item(0).getTextContent();
 						if(pId != "") {
 							XPathExpression pExpr = xpath.compile("//ROW[P_ID="+pId+"]/LICENSE_ID");
 
 							NodeList pNodeList = (NodeList)pExpr.evaluate(dmP, XPathConstants.NODESET);
-							//    			System.out.println("피값"+pNodeList.getLength());
 							if(pNodeList.getLength()!=0 && pNodeList.item(0).getTextContent()!="") {
 								String comment = pNodeList.item(0).getTextContent();
-								//    				fNodeList.item(j).getElementsByTagName("COMMENT").item(0).setTextContent(comment);
 								fElement.getElementsByTagName("COMMENT").item(0).setTextContent(comment);
 								//결과가 0이아니고 ""이 아니면 코멘트에 값 세팅
 							}
