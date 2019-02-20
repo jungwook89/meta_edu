@@ -3,6 +3,7 @@ package logFileAnalysis;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 public class LogFileReadTest {
@@ -15,7 +16,7 @@ public class LogFileReadTest {
 		Iterable<String> logList =Files.readAllLines(pa);
 		long start = System.currentTimeMillis();
 		for (String logLine:logList) {
-			if(logLine.contains("bean start.")) {
+			if(logLine.contains("eclipse.galileo-bean-thread")) {
 //				System.out.println(logLine);
 			}
 		}
