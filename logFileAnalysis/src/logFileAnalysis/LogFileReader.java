@@ -25,11 +25,20 @@
 
 package logFileAnalysis;
 
+import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.plaf.FileChooserUI;
 
 /**
 
@@ -50,35 +59,145 @@ import java.util.Map;
  */
 public class LogFileReader {
 	
+//	public String subList(int start,int end) {
+//		String returnData = null;
+//		for (int i = start; i < end ; i++) {
+//		
+//		}
+//		return returnData;
+//	}
+	
 	public static void main(String[] args) {
+		
 		// TODO Auto-generated method stub
 //		long start = System.currentTimeMillis();
 		Path pa = FileSystems.getDefault().getPath("C:\\galileo.log");
 		try {
-		Iterable<String> logList =Files.readAllLines(pa);
-//		long start = System.currentTimeMillis();
+		List logList =Files.readAllLines(pa);
+		ListIterator<String> itList = logList.listIterator();
+//		while(itList.hasNext()){
+//			System.out.println(itList.next());
+//		}
 		
-		for (String logLine:logList) {
+//		long start = System.currentTimeMillis();
+		Map<String, Object> threadMap = new HashMap<String,Object>();
+		
+		String logStartReg = "[\\[]([0-9][0-9].[0-9][0-9].[0-9][0-9][\\s][0-9][0-9]:[0-9][0-9]:[0-9][0-9])[\\]][\\s].*thread-(.*?)galileo.*?bean start\\.";
+		Pattern logStartPT = Pattern.compile(logStartReg);
+		
+		String logEndReg = "[\\[]([0-9][0-9].[0-9][0-9].[0-9][0-9][\\s][0-9][0-9]:[0-9][0-9]:[0-9][0-9])[\\]][\\s].*thread-(.*?)galileo.*?bean end\\.";
+		Pattern logEndPT = Pattern.compile(logEndReg);
+		
+		String logLengthReg = "thread-(.*?)galileo.*?(ESB_TRAN_ID)[\\s]:[\\s](.*)";
+		Pattern logLengthPT = Pattern.compile(logLengthReg);
+		
+		String logCalltimeReg = "thread-(.*?)galileo.*?[\\#](galileo[\\s]call[\\s]time):(.*)";
+		Pattern logCalltimePT = Pattern.compile(logCalltimeReg);
+		
+		String logStopWatchReg = "thread-(.*?)galileo.*?(StopWatch)(.*)";
+		Pattern logStopWatchPT = Pattern.compile(logStopWatchReg);
+		
+		String logRunTimeReg = "((^([^\\[]|\\d)\\d\\d\\d\\d).*)";
+		Pattern logRunTimePT = Pattern.compile(logRunTimeReg);
+//		String parseLogReg2 = "(StopWatch ([\\s\\S])*?([\\[]JSSESION_ID){1}.*?([\n]))";
+//		Pattern parsePT2 = Pattern.compile(parseLogReg);
+		int count = 0;
+		while(itList.hasNext()) {
+			String logLine = itList.next();
+		
+			Matcher  matcher = logStartPT.matcher(logLine);
+			if(matcher.find()) {
+				String threadId = matcher.group(2);
+				String startTime = matcher.group(1);
+				if(threadMap.containsKey(threadId)) {//threadID가 맵에 존재하면 
+					((HashMap)threadMap.get(threadId)).clear();
+					((HashMap)threadMap.get(threadId)).put("startTime", startTime);
+//					System.out.println("start 두번"+threadMap.get(threadId));
+				}else {
+					threadMap.put(threadId, new HashMap<String,Object>());
+					((HashMap)threadMap.get(threadId)).put("startTime", startTime);
+//					System.out.println("start 한번"+threadMap.get(threadId));
+				}
+				continue;
+			}
 			
-			if(logLine.indexOf("bean start.")>-1) {
-				String threadStTime = logLine.substring(1,18);
-				String threadNum=logLine.substring(58,66);
-				String MapKey =threadStTime+threadNum;
-				
-				Map<String, Object> Map = new HashMap<String,Object>();
-				System.out.println("st"+threadStTime+threadNum);
-
-				
-//				System.out.println(logLine);
+			matcher = logEndPT.matcher(logLine);
+			if(matcher.find()) {
+				String threadId = matcher.group(2);
+				String endTime = matcher.group(1);
+				if(threadMap.containsKey(threadId)) {//threadID가 맵에 존재하면 
+					((HashMap)threadMap.get(threadId)).put("endTime", endTime);
+					
+					if(((HashMap)threadMap.get(threadId)).size()==8) {
+						count++;
+					System.out.println(count+"끝남"+threadMap.get(threadId));
+					}
+					threadMap.remove(threadId);
+				}
+				continue;
 			}
-			if(logLine.indexOf("bean end.")>-1) {
-				String threadEdTime = logLine.substring(1,18);
-				String threadNum=logLine.substring(58,66);
-				System.out.println("en"+threadEdTime+threadNum);
-				String MapKey = threadEdTime+threadNum;
-				
-//				System.out.println(logLine);
+			
+			matcher = logLengthPT.matcher(logLine);
+			if(matcher.find()) {
+				String threadId = matcher.group(1);
+				String contentLength = matcher.group(3);
+				if(threadMap.containsKey(threadId)) {//threadID가 맵에 존재하면 
+					((HashMap)threadMap.get(threadId)).put("contentLength", contentLength);
+//					System.out.println("start 두번"+threadMap.get(threadId));
+				}
+				continue;
 			}
+			
+			matcher = logCalltimePT.matcher(logLine);
+			if(matcher.find()) {
+				String threadId = matcher.group(1);
+				String callTime = matcher.group(3);
+				if(threadMap.containsKey(threadId)) {//threadID가 맵에 존재하면 
+					((HashMap)threadMap.get(threadId)).put("callTime", callTime);
+//					System.out.println("start 두번"+threadMap.get(threadId));
+				}
+				continue;
+			}
+			
+			matcher = logCalltimePT.matcher(logLine);
+			if(matcher.find()) {
+				String threadId = matcher.group(1);
+				String callTime = matcher.group(3);
+				if(threadMap.containsKey(threadId)) {//threadID가 맵에 존재하면 
+					((HashMap)threadMap.get(threadId)).put("callTime", callTime);
+//					System.out.println("start 두번"+threadMap.get(threadId));
+				}
+				continue;
+			}
+			
+			matcher = logStopWatchPT.matcher(logLine);
+			if(matcher.find()) {
+				String threadId = matcher.group(1);
+				if(threadMap.containsKey(threadId)) {
+					int nextIdx = itList.nextIndex();
+					System.out.println(nextIdx);
+					System.out.println((String)(logList.get(nextIdx+3)));
+					matcher = logRunTimePT.matcher((String)(logList.get(nextIdx+3)));
+					if(matcher.find()) {
+						((HashMap)threadMap.get(threadId)).put("beforeMarshalling", matcher.group(2));
+					}
+					matcher = logRunTimePT.matcher((String)(logList.get(nextIdx+4)));
+					if(matcher.find()) {
+						((HashMap)threadMap.get(threadId)).put("marshalling", matcher.group(2));
+					}
+					matcher = logRunTimePT.matcher((String)(logList.get(nextIdx+5)));
+					if(matcher.find()) {
+						((HashMap)threadMap.get(threadId)).put("invokingGalileo", matcher.group(2));
+					}
+					matcher = logRunTimePT.matcher((String)(logList.get(nextIdx+6)));
+					if(matcher.find()) {
+						((HashMap)threadMap.get(threadId)).put("unmarshallingAndSendToCmmmodServer", matcher.group(2));
+					}
+					continue;
+				}
+				continue;
+			}
+			
 		}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -86,25 +205,6 @@ public class LogFileReader {
 //		long end = System.currentTimeMillis();
 //		System.out.println((end-start)/1000.0);
 		
-		
-//		Map<String, Object> findMap = new HashMap<String,Object>();
-		
-//		long start = System.currentTimeMillis();
-//		BufferedInputStream input = null;
-//		try {
-//		input = new BufferedInputStream(new FileInputStream("C:\\galileo.log"));
-//        StringBuilder sb = new StringBuilder();
-//        while (input.available() > 0) {
-//            sb.append((char) input.read());
-//        }
-//        input.close();
-////        System.out.println("read this :");
-////        System.out.println(sb.toString());
-//		}catch(Exception e) {
-//			e.printStackTrace();
-//		}
-//		long end = System.currentTimeMillis();
-//		System.out.println((end-start)/1000.0);
 //		
 	}
 
