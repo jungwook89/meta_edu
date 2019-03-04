@@ -68,7 +68,7 @@ public class LogFileReader {
 //	}
 	
 	public static void main(String[] args) {
-		
+		long start = System.currentTimeMillis();
 		// TODO Auto-generated method stub
 //		long start = System.currentTimeMillis();
 		Path pa = FileSystems.getDefault().getPath("C:\\galileo.log");
@@ -79,13 +79,13 @@ public class LogFileReader {
 //			System.out.println(itList.next());
 //		}
 		
-//		long start = System.currentTimeMillis();
+
 		Map<String, Object> threadMap = new HashMap<String,Object>();
 		
-		String logStartReg = "[\\[]([0-9][0-9].[0-9][0-9].[0-9][0-9][\\s][0-9][0-9]:[0-9][0-9]:[0-9][0-9])[\\]][\\s].*thread-(.*?)galileo.*?bean start\\.";
+		String logStartReg = "[\\[]([\\d][\\d].[\\d][\\d].[\\d][\\d][\\s][\\d][\\d]:[\\d][\\d]:[\\d][\\d])[\\]][\\s].*thread-(.*?)galileo.*?bean start\\.";
 		Pattern logStartPT = Pattern.compile(logStartReg);
 		
-		String logEndReg = "[\\[]([0-9][0-9].[0-9][0-9].[0-9][0-9][\\s][0-9][0-9]:[0-9][0-9]:[0-9][0-9])[\\]][\\s].*thread-(.*?)galileo.*?bean end\\.";
+		String logEndReg = "[\\[]([\\d][\\d].[\\d][\\d].[\\d][\\d][\\s][\\d][\\d]:[\\d][\\d]:[\\d][\\d])[\\]][\\s].*thread-(.*?)galileo.*?bean end\\.";
 		Pattern logEndPT = Pattern.compile(logEndReg);
 		
 		String logLengthReg = "thread-(.*?)galileo.*?(ESB_TRAN_ID)[\\s]:[\\s](.*)";
@@ -130,7 +130,7 @@ public class LogFileReader {
 					
 					if(((HashMap)threadMap.get(threadId)).size()==8) {
 						count++;
-					System.out.println(count+"끝남"+threadMap.get(threadId));
+//					System.out.println(count+"끝남"+threadMap.get(threadId));
 					}
 					threadMap.remove(threadId);
 				}
@@ -175,8 +175,8 @@ public class LogFileReader {
 				String threadId = matcher.group(1);
 				if(threadMap.containsKey(threadId)) {
 					int nextIdx = itList.nextIndex();
-					System.out.println(nextIdx);
-					System.out.println((String)(logList.get(nextIdx+3)));
+//					System.out.println(nextIdx);
+//					System.out.println((String)(logList.get(nextIdx+3)));
 					matcher = logRunTimePT.matcher((String)(logList.get(nextIdx+3)));
 					if(matcher.find()) {
 						((HashMap)threadMap.get(threadId)).put("beforeMarshalling", matcher.group(2));
@@ -202,8 +202,8 @@ public class LogFileReader {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-//		long end = System.currentTimeMillis();
-//		System.out.println((end-start)/1000.0);
+		long end = System.currentTimeMillis();
+		System.out.println((end-start)/1000.0);
 		
 //		
 	}
