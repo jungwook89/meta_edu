@@ -23,19 +23,17 @@ public class LogFileAnalysisMain {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		LogFileReader lfr = new LogFileReader("C:\\galileo.log");
+//		LogFileReader lfr = new LogFileReader("C:\\galileo.log");
+//		List<String> testList = lfr.readFile();
+//		LogAnalysis la = new LogAnalysis();
+//		la.logAnalysis(testList);
+//		List targetList = la.getBySortedList();
+//		
+//		LogFileExport lfe = new LogFileExport("C:\\galileo_analysis.log");
+//		System.out.println(lfe.outputFile(targetList));;
+		LogFileReader lfr = new LogFileReader("C:\\galileo_analysis.log");
 		List<String> testList = lfr.readFile();
-//		for(String one : testList) {
-//			System.out.println(one);
-//		}
-		LogAnalysis la = new LogAnalysis();
-		la.logAnalysis(testList);
-		List targetList = la.getBySortedList();
-		
-		LogFileExport lfe = new LogFileExport("C:\\galileo_analysis.log");
-		System.out.println(lfe.outputFile(targetList));;
-		
-		
+		System.out.println(testList);
 //		for(HashMap<String,Object> oneMap : Arrays.asList(testMap)) {
 //			for(String key : oneMap.keySet()){
 //				HashMap<String,Object> hoho = (HashMap<String, Object>) oneMap.get(key);

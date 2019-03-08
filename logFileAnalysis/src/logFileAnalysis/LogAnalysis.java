@@ -96,7 +96,38 @@ public class LogAnalysis {
 		return this.outputList;
 	}
 	
-	protected HashMap<String, Object> logAnalysis(List<String> logList) {
+	protected void logAnalysisPT2(List<String> logList) {
+		
+		HashMap<String,HashMap<String,ArrayList>> groupMap = new HashMap<String,HashMap<String,ArrayList>>();
+				
+		
+		
+		for(String log:logList) {
+			String[] tempArray=log.split(",");
+			String curSTTime = tempArray[0];
+			String curEDTime = tempArray[1];
+			String curTranId = tempArray[2];
+			String curLength = tempArray[3];
+			String curCallTime = tempArray[4];
+			String curBFMarshall = tempArray[5];
+			String curMarshall = tempArray[6];
+			String curInvoke = tempArray[7];
+			String curUnMashall = tempArray[8];
+			
+			if(!groupMap.containsKey(curSTTime)) {
+				groupMap.put(curSTTime, new HashMap());
+			}
+			ArrayList startList = new ArrayList();
+			startList.add(curSTTime);
+			groupMap.get(curSTTime).put("startTime", startList);
+			int[] haha = {1,2,3};
+			double avg = Arrays.stream(haha).average().getAsDouble();
+			
+		}
+	}
+	
+	
+	protected void logAnalysis(List<String> logList) {
 		System.out.println(Runtime.getRuntime().freeMemory()/(1024*1024));
 		System.gc();
 		long preUseMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
@@ -248,7 +279,7 @@ public class LogAnalysis {
 		System.out.println(useMemory);
 		long end = System.currentTimeMillis();
 		System.out.println((end-start)/1000.0);
-		return threadMap;
+		
 	}
 	
 	
