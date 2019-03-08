@@ -29,15 +29,20 @@ public class LogFileAnalysisMain {
 //			System.out.println(one);
 //		}
 		LogAnalysis la = new LogAnalysis();
-		HashMap<String,Object> testMap= la.logAnalysis(testList);
+		la.logAnalysis(testList);
+		List targetList = la.getBySortedList();
 		
-		for(HashMap<String,Object> oneMap : Arrays.asList(testMap)) {
-			for(String key : oneMap.keySet()){
-				HashMap<String,Object> hoho = (HashMap<String, Object>) oneMap.get(key);
-				System.out.println(hoho.get("startTime"));
-			}
-			
-		}
+		LogFileExport lfe = new LogFileExport("C:\\galileo_analysis.log");
+		System.out.println(lfe.outputFile(targetList));;
+		
+		
+//		for(HashMap<String,Object> oneMap : Arrays.asList(testMap)) {
+//			for(String key : oneMap.keySet()){
+//				HashMap<String,Object> hoho = (HashMap<String, Object>) oneMap.get(key);
+//				System.out.println(hoho.get("startTime"));
+//			}
+//			
+//		}
 	}
 
 }

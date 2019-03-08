@@ -37,6 +37,7 @@ import java.nio.file.ReadOnlyFileSystemException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -75,7 +76,7 @@ public class LogAnalysis {
 	private HashMap<String, Object> threadMap = new HashMap<String,Object>();
 	private List<String> logList = null;
 	private ListIterator<String> itList = null;
-	
+	private List<String >outputList = new ArrayList<String>();
 //	public String subList(int start,int end) {
 //		String returnData = null;
 //		for (int i = start; i < end ; i++) {
@@ -83,33 +84,23 @@ public class LogAnalysis {
 //		}
 //		return returnData;
 //	}
-	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-        List<Entry<K, V>> list = new ArrayList<>(map.entrySet());
-        list.sort(Entry.comparingByValue());
-
-        Map<K, V> result = new LinkedHashMap<>();
-        for (Entry<K, V> entry : list) {
-            result.put(entry.getKey(), entry.getValue());
-        }
-
-        return result;
-    }
+	
+	protected HashMap<String, Object> getByMap() {
+		return this.threadMap;
+	}
+	protected List<String > getByList() {
+		return this.outputList;
+	}
+	protected List<String > getBySortedList() {
+		Collections.sort(outputList);
+		return this.outputList;
+	}
 	
 	protected HashMap<String, Object> logAnalysis(List<String> logList) {
 		System.out.println(Runtime.getRuntime().freeMemory()/(1024*1024));
 		System.gc();
 		long preUseMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 		long start = System.currentTimeMillis();
-		
-		ListIterator<String> itList = null;
-		HashMap<String, Object> tempMap = new HashMap<String,Object>();
-		HashMap<String, Object> threadMap = new HashMap<String,Object>();
-		
-//		long start = System.currentTimeMillis();
-		
-		
-		
-
 		
 		
 		String logStartReg = "[\\[]([\\d][\\d].[\\d][\\d].[\\d][\\d][\\s][\\d][\\d]:[\\d][\\d]:[\\d][\\d])[\\]][\\s].*thread-(.*?)galileo.*?bean start\\.";
@@ -132,8 +123,6 @@ public class LogAnalysis {
 		
 		String logRunTimeReg = "((^([^\\[]|\\d)\\d\\d\\d\\d).*)";
 		Pattern logRunTimePT = Pattern.compile(logRunTimeReg);
-//		String parseLogReg2 = "(StopWatch ([\\s\\S])*?([\\[]JSSESION_ID){1}.*?([\n]))";
-//		Pattern parsePT2 = Pattern.compile(parseLogReg);
 		
 		itList = logList.listIterator();
 		int count = 0;
@@ -155,22 +144,31 @@ public class LogAnalysis {
 				}
 				continue;
 			}
-			
+			ArrayList<String> tempList = new ArrayList();
 			matcher = logEndPT.matcher(logLine);
 			if(matcher.find()) {
 				String threadId = matcher.group(2);
 				String endTime = matcher.group(1);
 				if(tempMap.containsKey(threadId)) {//threadID가 맵에 존재하면 
-					((HashMap)tempMap.get(threadId)).put("endTime", endTime);
+					HashMap targetMap = ((HashMap)tempMap.get(threadId));
+					targetMap.put("endTime", endTime);
 					
 					if(((HashMap)tempMap.get(threadId)).size()==9) {
 						count++;
-						threadMap.put((((HashMap)tempMap.get(threadId)).get("esbTranId")).toString(),((HashMap<String,Object>)tempMap.get(threadId)));
+						threadMap.put((((HashMap)tempMap.get(threadId)).get("esbTranId")).toString(),targetMap.get(threadId));
 						
-//						List mapValues=Collectors.toList(((HashMap)tempMap.get(threadId)).values());
-//						System.out.println(mapValues.get(-1));
+						tempList.add(targetMap.get("startTime").toString());
+						tempList.add(targetMap.get("endTime").toString());
+						tempList.add(targetMap.get("esbTranId").toString());
+						tempList.add(targetMap.get("contentLength").toString());
+						tempList.add(targetMap.get("callTime").toString());
+						tempList.add(targetMap.get("beforeMarshalling").toString());
+						tempList.add(targetMap.get("marshalling").toString());
+						tempList.add(targetMap.get("invokingGalileo").toString());
+						tempList.add(targetMap.get("unmarshallingAndSendToCmmmodServer").toString());
 						
-//						System.out.println(count+"끝남"+String.join(",",((HashMap)tempMap.get(threadId)).values()));
+						outputList.add(String.join(",", tempList));
+						
 					}
 					tempMap.remove(threadId);
 				}
@@ -240,17 +238,7 @@ public class LogAnalysis {
 			
 		}
 		
-//		StringBuffer sb = new StringBuffer();
-//		for(String threadKey:threadMap.keySet()) {
-//			System.out.println(threadMap.get(threadKey));
-//		}
 		
-	
-//		System.out.println(threadKey);
-		
-//		for(HashMap thread : Arrays.asList(threadMap)) {
-//			System.out.println(thread);
-//		}
 		System.gc();
 		long aftUseMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 		long useMemory =  (preUseMemory - aftUseMemory) / 1000;

@@ -54,24 +54,13 @@ import java.util.ListIterator;
  */
 public class LogFileReader {
 	private String filePath = null; //파일 경로
-	private HashMap<String, Object> tempMap = new HashMap<String,Object>();
-	private HashMap<String, Object> threadMap = new HashMap<String,Object>();
-	private List<String> logList = null;
-	private ListIterator<String> itList = null;
-	
+	private List<String> allLineList = new ArrayList<String>();
 	public LogFileReader(String filePath) {
 		this.filePath = filePath;
 	}
-//	public String subList(int start,int end) {
-//		String returnData = null;
-//		for (int i = start; i < end ; i++) {
-//		
-//		}
-//		return returnData;
-//	}
 	protected List<String> readFile(){
 		BufferedReader br = null;
-		List<String> allLineList = new ArrayList<String>();
+		
 		try {
 			File targetFile = new File(filePath);
 			if(targetFile.exists()) {
@@ -116,15 +105,11 @@ public class LogFileReader {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		long start = System.currentTimeMillis();
-		
 		LogFileReader lfr = new LogFileReader("C:\\galileo.log");
 		List<String> testList = lfr.readFile();
 		for(String one : testList) {
 			System.out.println(one);
 		}
-		long end = System.currentTimeMillis();
-		System.out.println((end-start)/1000.0);
 		
 //		
 	}
